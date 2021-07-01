@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">TownApp</string>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <!-- Chat Activity -->
+    <color name="localBackground">#827b92</color>
+    <color name="remoteBackground">#484258</color>
+
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="local_preview_margin_top">28dp</dimen>
+    <dimen name="local_preview_margin_right">24dp</dimen>
+
+    <dimen name="local_preview_width">88dp</dimen>
+    <dimen name="local_preview_height">117dp</dimen>
+    <dimen name="local_back_icon_size">50dp</dimen>
+    <dimen name="remote_back_icon_size">100dp</dimen>
+    <dimen name="remote_back_icon_margin_bottom">90dp</dimen>
+
+    <!-- buttons -->
+    <dimen name="control_bottom_margin">24dp</dimen>
+    <dimen name="control_bottom_horizontal_margin">30dp</dimen>
+
+    <!-- buttons -->
+    <dimen name="call_button_size">60dp</dimen>
+    <dimen name="other_button_size">54dp</dimen>
+
+    <string name="agora_app_id">0ba24239f1d341798594240b204f8835</string>
+    <string name="agora_access_token">006458915b8278f49fd84d5db3da66ca0a5IADvwM8re7nFP7bFTpHZENqfWTeQaW4G0YL8+dQq6CMWME2x7RgAAAAAEAAm+nFWJ8TcYAEAAQAmxNxg</string>
+</resources>
