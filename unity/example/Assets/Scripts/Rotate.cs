@@ -50,4 +50,9 @@ public class Rotate : MonoBehaviour
         var delta = 30 * Time.deltaTime;
         transform.localRotation *= Quaternion.Euler(delta, delta, delta);
     }
+
+    public void onTap()
+    {
+        canRotate = false;
+    }
 }

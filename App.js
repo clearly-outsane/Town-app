@@ -7,7 +7,6 @@
  */
 
 import React from 'react';
-// import VideoView from './components/VideoView';
 import UnityView from '@asmadsen/react-native-unity-view';
 import VideoView from './components/VideoView';
 
