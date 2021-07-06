@@ -1,12 +1,17 @@
 import React, {Component} from 'react';
-import {Platform, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {
+    Platform,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View,
+    PermissionsAndroid,
+} from 'react-native';
 import RtcEngine, {
     RtcLocalView,
     RtcRemoteView,
     VideoRenderMode,
 } from 'react-native-agora';
-
-import {PermissionsAndroid} from 'react-native';
 
 import styles from './Style';
 
@@ -31,12 +36,12 @@ const requestCameraAndAudioPermission = async () => {
     }
 };
 
-export default class App extends React.Component {
+export default class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
             appId: '458915b8278f49fd84d5db3da66ca0a5',
-            token: '006458915b8278f49fd84d5db3da66ca0a5IACKTS6PVPRaa7JYKGHeGO/rVQ7GSCXFWe8j2+KvkgfWrE2x7RgAAAAAEAAY899JJy3kYAEAAQAnLeRg',
+            token: '006458915b8278f49fd84d5db3da66ca0a5IAAuFIpqXf5NizoAKZhAhO2c8ADIKcsjHnTjqWUCgzATwk2x7RgAAAAAEAAY899J1KDkYAEAAQDToORg',
             channelName: 'lol',
             joinSucceed: false,
             peerIds: [],
@@ -51,6 +56,17 @@ export default class App extends React.Component {
 
     componentDidMount() {
         this.init();
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.callState !== this.props.callState) {
+            if (this.props.callState === 'enter') {
+                this.startCall();
+            }
+            if (this.props.callState === 'exit') {
+                this.endCall();
+            }
+        }
     }
 
     /**
@@ -132,7 +148,7 @@ export default class App extends React.Component {
         return (
             <View style={styles.max}>
                 <View style={styles.max}>
-                    <View style={styles.buttonHolder}>
+                    {/* <View style={styles.buttonHolder}>
                         <TouchableOpacity
                             onPress={this.startCall}
                             style={styles.button}>
@@ -143,7 +159,7 @@ export default class App extends React.Component {
                             style={styles.button}>
                             <Text style={styles.buttonText}> End Call </Text>
                         </TouchableOpacity>
-                    </View>
+                    </View> */}
                     {this._renderVideos()}
                 </View>
             </View>
@@ -174,6 +190,7 @@ export default class App extends React.Component {
                 {peerIds.map(value => {
                     return (
                         <RtcRemoteView.SurfaceView
+                            key={value}
                             style={styles.remote}
                             uid={value}
                             channelId={this.state.channelName}

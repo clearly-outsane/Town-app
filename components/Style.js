@@ -10,11 +10,11 @@ export default StyleSheet.create({
         flex: 1,
     },
     buttonHolder: {
-        height: 100,
-        alignItems: 'center',
-        flex: 1,
+        position: 'absolute',
+        height: 40,
+        alignSelf: 'center',
+        top: '50%',
         flexDirection: 'row',
-        justifyContent: 'space-evenly',
     },
     button: {
         paddingHorizontal: 20,
@@ -28,24 +28,25 @@ export default StyleSheet.create({
     },
     fullView: {
         width: dimensions.width,
-        height: dimensions.height - 100,
+        height: dimensions.height,
     },
     localview: {
         position: 'absolute',
         bottom: 8,
-        width: 150,
-        height: 150,
+        right: 8,
+        width: 124,
+        height: 124,
         marginHorizontal: 2.5,
     },
     remoteContainer: {
         width: '100%',
-        height: 150,
+        height: 124,
         position: 'absolute',
-        top: 5,
+        top: 4,
     },
     remote: {
-        width: 150,
-        height: 150,
+        width: 124,
+        height: 124,
         marginHorizontal: 2.5,
     },
     noUserText: {

@@ -1,3 +1,7 @@
+unity/
+android/UnityExport/
+android/*.hprof
+
 # OSX
 #
 .DS_Store
