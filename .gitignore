@@ -1,6 +1,6 @@
 unity/
-android/UnityExport/
 android/*.hprof
+UnityExport/
 
 # OSX
 #
