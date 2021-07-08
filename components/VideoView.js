@@ -41,7 +41,7 @@ export default class App extends Component {
         super(props);
         this.state = {
             appId: '458915b8278f49fd84d5db3da66ca0a5',
-            token: '006458915b8278f49fd84d5db3da66ca0a5IAAuFIpqXf5NizoAKZhAhO2c8ADIKcsjHnTjqWUCgzATwk2x7RgAAAAAEAAY899J1KDkYAEAAQDToORg',
+            token: '006458915b8278f49fd84d5db3da66ca0a5IAB2zJBsPJSortIuL2MULk96Q9SW0y/s8KO7KFJW2XLuAU2x7RgAAAAAEABsKo0tyy7oYAEAAQDLLuhg',
             channelName: 'lol',
             joinSucceed: false,
             peerIds: [],

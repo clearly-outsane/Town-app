@@ -6,9 +6,9 @@
  * @flow strict-local
  */
 
+import 'react-native-gesture-handler';
 import React from 'react';
-import UnityView from '@asmadsen/react-native-unity-view';
-import VideoView from './components/VideoView';
+import Game from './components/Game';
 
 import {
     SafeAreaView,
@@ -22,31 +22,37 @@ import {
     Button,
 } from 'react-native';
 
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
+
+const Stack = createStackNavigator();
+
+const Home = ({navigation}) => {
+    const handleMove = () => {
+        navigation.navigate('UnityView');
+    };
+
+    return (
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+            <Button title="Click me" onPress={handleMove} />
+            <Text>Lorem ipsum</Text>
+        </View>
+    );
+};
+
 class App extends React.Component {
-    state = {callState: 0};
-
-    onMessage(event) {
-        console.log('OnUnityMessage: ', event); // OnUnityMessage: click
-        this.setState({callState: event});
-    }
-
     render() {
         return (
-            <View style={{flex: 1}}>
-                <UnityView
-                    style={{
-                        position: 'absolute',
-                        left: 0,
-                        right: 0,
-                        top: 0,
-                        bottom: 0,
-                        zIndex: -1,
-                    }}
-                    onMessage={this.onMessage.bind(this)}
-                />
-
-                <VideoView callState={this.state.callState} />
-            </View>
+            <NavigationContainer initialRouteName="Home">
+                <Stack.Navigator>
+                    <Stack.Screen name="Home" component={Home} />
+                    <Stack.Screen
+                        name="UnityView"
+                        component={Game}
+                        options={{headerShown: false}}
+                    />
+                </Stack.Navigator>
+            </NavigationContainer>
         );
     }
 }
