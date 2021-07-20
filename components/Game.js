@@ -13,11 +13,10 @@ import VideoView from './VideoView';
 import {View} from 'react-native';
 
 class App extends React.Component {
-    state = {callState: 0};
+    state = {netId: -1, channelName: '', peers: [], message: ''};
 
     onMessage(event) {
-        console.log('OnUnityMessage: ', event); // OnUnityMessage: click
-        this.setState({callState: event});
+        this.setState({message: event});
     }
 
     render() {
@@ -35,7 +34,7 @@ class App extends React.Component {
                     onMessage={this.onMessage.bind(this)}
                 />
 
-                <VideoView callState={this.state.callState} />
+                <VideoView message={this.state.message} />
             </View>
         );
     }

@@ -43,7 +43,7 @@ const Home = ({navigation}) => {
 class App extends React.Component {
     render() {
         return (
-            <NavigationContainer initialRouteName="Home">
+            <NavigationContainer initialRouteName="UnityView">
                 <Stack.Navigator>
                     <Stack.Screen name="Home" component={Home} />
                     <Stack.Screen

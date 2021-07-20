@@ -45,6 +45,8 @@ export default class App extends Component {
             channelName: 'lol',
             joinSucceed: false,
             peerIds: [],
+            proximityPeers: [],
+            netId: -1,
         };
         if (Platform.OS === 'android') {
             // Request required permissions from Android
@@ -59,13 +61,82 @@ export default class App extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.callState !== this.props.callState) {
-            if (this.props.callState === 'enter') {
-                this.startCall();
+        if (prevProps.message !== this.props.message) {
+            msg = this.props.message;
+            console.log(
+                'OnUnityMessage: ',
+                msg,
+                'received on',
+                this.state.netId,
+            );
+            const parsedJson = JSON.parse(msg);
+
+            if (parsedJson.action === 'Initial') {
+                this.setState(
+                    {
+                        ...this.state,
+                        netId: parseInt(parsedJson.netId),
+                    },
+                    this.startCall,
+                );
             }
-            if (this.props.callState === 'exit') {
-                this.endCall();
+
+            if (parsedJson.action === 'EnterProximityMeeting') {
+                const index = this.state.proximityPeers.indexOf(
+                    parsedJson.name,
+                );
+                if (index === -1) {
+                    uid = parseInt(parsedJson.name);
+                    this._engine.muteRemoteVideoStream(uid, false);
+                    this._engine.muteRemoteAudioStream(uid, false);
+                    this.setState({
+                        ...this.state,
+                        proximityPeers: [
+                            ...this.state.proximityPeers,
+                            parsedJson.name,
+                        ],
+                    });
+                }
+                console.log(
+                    'Adding : ',
+                    parsedJson.name,
+                    'to',
+                    this.state.netId,
+                );
             }
+
+            if (parsedJson.action === 'LeaveProximityMeeting') {
+                const index = this.state.proximityPeers.indexOf(
+                    parsedJson.name,
+                );
+
+                var tempPeers = this.state.proximityPeers;
+
+                if (index > -1) {
+                    tempPeers.splice(index, 1);
+                    //mute them if they leave
+                    uid = parseInt(parsedJson.name);
+                    this._engine.muteRemoteVideoStream(uid, true);
+                    this._engine.muteRemoteAudioStream(uid, true);
+                    this.setState({
+                        ...this.state,
+                        proximityPeers: [...tempPeers],
+                    });
+                }
+                console.log(
+                    'Removing : ',
+                    parsedJson.name,
+                    'from',
+                    this.state.netId,
+                );
+            }
+
+            console.log(
+                'State in onMessage:',
+                this.state.proximityPeers,
+                '_netId: ',
+                this.state.netId,
+            );
         }
     }
 
@@ -88,6 +159,8 @@ export default class App extends Component {
 
         this._engine.addListener('UserJoined', (uid, elapsed) => {
             console.log('UserJoined', uid, elapsed);
+            this._engine.muteRemoteVideoStream(uid, true);
+            this._engine.muteRemoteAudioStream(uid, true);
             // Get current peer IDs
             const {peerIds} = this.state;
             // If new user
@@ -131,7 +204,7 @@ export default class App extends Component {
             this.state.token,
             this.state.channelName,
             null,
-            0,
+            this.state.netId,
         );
     };
 
@@ -144,20 +217,62 @@ export default class App extends Component {
         this.setState({peerIds: [], joinSucceed: false});
     };
 
+    unmuteEveryone = async () => {
+        console.log('UNMUTING');
+        await Promise.all(
+            this.state.proximityPeers.map(async peer => {
+                peer = parseInt(peer);
+                try {
+                    console.log(
+                        'Unmuting the peer-',
+                        peer,
+                        'on',
+                        this.state.netId,
+                    );
+                    await this._engine?.muteRemoteVideoStream(peer, false);
+                    await this._engine?.muteRemoteAudioStream(peer, false);
+                } catch (e) {
+                    print('please end me', e);
+                }
+            }),
+        );
+    };
+
+    muteEveryone = async () => {
+        console.log('MUTING');
+        await Promise.all(
+            this.state.proximityPeers.map(async peer => {
+                peer = parseInt(peer);
+                try {
+                    console.log(
+                        'Muting the peer-',
+                        peer,
+                        'on',
+                        this.state.netId,
+                    );
+                    await this._engine?.muteRemoteVideoStream(peer, true);
+                    await this._engine?.muteRemoteAudioStream(peer, true);
+                } catch (e) {
+                    console.log('please end me', e);
+                }
+            }),
+        );
+    };
+
     render() {
         return (
             <View style={styles.max}>
                 <View style={styles.max}>
                     {/* <View style={styles.buttonHolder}>
                         <TouchableOpacity
-                            onPress={this.startCall}
+                            onPress={this.unmuteEveryone}
                             style={styles.button}>
-                            <Text style={styles.buttonText}> Start Call </Text>
+                            <Text style={styles.buttonText}> Unmute Call </Text>
                         </TouchableOpacity>
                         <TouchableOpacity
-                            onPress={this.endCall}
+                            onPress={this.muteEveryone}
                             style={styles.button}>
-                            <Text style={styles.buttonText}> End Call </Text>
+                            <Text style={styles.buttonText}> Mute Call </Text>
                         </TouchableOpacity>
                     </View> */}
                     {this._renderVideos()}
@@ -181,13 +296,20 @@ export default class App extends Component {
     };
 
     _renderRemoteVideos = () => {
-        const {peerIds} = this.state;
+        const {proximityPeers} = this.state;
         return (
             <ScrollView
                 style={styles.remoteContainer}
                 contentContainerStyle={{paddingHorizontal: 2.5}}
                 horizontal={true}>
-                {peerIds.map(value => {
+                {proximityPeers.map(value => {
+                    value = parseInt(value);
+                    console.log(
+                        'Remote Peer View-',
+                        value,
+                        'local peer view- ',
+                        this.state.netId,
+                    );
                     return (
                         <RtcRemoteView.SurfaceView
                             key={value}
