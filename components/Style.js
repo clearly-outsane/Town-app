@@ -1,13 +1,10 @@
 import {Dimensions, StyleSheet} from 'react-native';
 
-const dimensions = {
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
-};
-
 export default StyleSheet.create({
     max: {
-        flex: 1,
+        height: '100%',
+        width: '100%',
+        position: 'absolute',
     },
     buttonHolder: {
         position: 'absolute',
@@ -26,10 +23,6 @@ export default StyleSheet.create({
     buttonText: {
         color: '#fff',
     },
-    fullView: {
-        width: dimensions.width,
-        height: dimensions.height,
-    },
     localview: {
         position: 'absolute',
         bottom: 8,
@@ -37,21 +30,52 @@ export default StyleSheet.create({
         width: 124,
         height: 124,
         marginHorizontal: 2.5,
+        overflow: 'hidden',
+        borderRadius: 16,
     },
     remoteContainer: {
         width: '100%',
         height: 124,
         position: 'absolute',
-        top: 4,
+        top: 8,
+        marginHorizontal: 8,
     },
     remote: {
         width: 124,
         height: 124,
         marginHorizontal: 2.5,
+        overflow: 'hidden',
+        borderRadius: 16,
     },
     noUserText: {
         paddingHorizontal: 10,
         paddingVertical: 5,
         color: '#0093E9',
+    },
+    videoControlsOverlay: {
+        overflow: 'hidden',
+        alignItems: 'center',
+        borderColor: 'white',
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        right: 0,
+        left: 0,
+    },
+    rightButton: {
+        borderWidth: 1,
+        borderTopRightRadius: 4,
+        borderBottomRightRadius: 4,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 2,
+    },
+    leftButton: {
+        borderWidth: 1,
+        borderTopLeftRadius: 4,
+        borderBottomLeftRadius: 4,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 2,
     },
 });

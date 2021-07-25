@@ -12,6 +12,7 @@ import RtcEngine, {
     RtcRemoteView,
     VideoRenderMode,
 } from 'react-native-agora';
+import FAIcon from 'react-native-vector-icons/FontAwesome';
 
 import styles from './Style';
 
@@ -61,6 +62,9 @@ export default class App extends Component {
     }
 
     componentDidUpdate(prevProps) {
+        if (prevProps.dynamicStyles !== this.props.dynamicStyles) {
+            console.log(this.props.dynamicStyles);
+        }
         if (prevProps.message !== this.props.message) {
             msg = this.props.message;
             console.log(
@@ -159,8 +163,8 @@ export default class App extends Component {
 
         this._engine.addListener('UserJoined', (uid, elapsed) => {
             console.log('UserJoined', uid, elapsed);
-            this._engine.muteRemoteVideoStream(uid, true);
-            this._engine.muteRemoteAudioStream(uid, true);
+            // this._engine.muteRemoteVideoStream(uid, true);
+            // this._engine.muteRemoteAudioStream(uid, true);
             // Get current peer IDs
             const {peerIds} = this.state;
             // If new user
@@ -192,6 +196,7 @@ export default class App extends Component {
                 });
             },
         );
+        this.startCall();
     };
 
     /**
@@ -204,7 +209,8 @@ export default class App extends Component {
             this.state.token,
             this.state.channelName,
             null,
-            this.state.netId,
+            // this.state.netId,
+            0,
         );
     };
 
@@ -217,51 +223,9 @@ export default class App extends Component {
         this.setState({peerIds: [], joinSucceed: false});
     };
 
-    unmuteEveryone = async () => {
-        console.log('UNMUTING');
-        await Promise.all(
-            this.state.proximityPeers.map(async peer => {
-                peer = parseInt(peer);
-                try {
-                    console.log(
-                        'Unmuting the peer-',
-                        peer,
-                        'on',
-                        this.state.netId,
-                    );
-                    await this._engine?.muteRemoteVideoStream(peer, false);
-                    await this._engine?.muteRemoteAudioStream(peer, false);
-                } catch (e) {
-                    print('please end me', e);
-                }
-            }),
-        );
-    };
-
-    muteEveryone = async () => {
-        console.log('MUTING');
-        await Promise.all(
-            this.state.proximityPeers.map(async peer => {
-                peer = parseInt(peer);
-                try {
-                    console.log(
-                        'Muting the peer-',
-                        peer,
-                        'on',
-                        this.state.netId,
-                    );
-                    await this._engine?.muteRemoteVideoStream(peer, true);
-                    await this._engine?.muteRemoteAudioStream(peer, true);
-                } catch (e) {
-                    console.log('please end me', e);
-                }
-            }),
-        );
-    };
-
     render() {
         return (
-            <View style={styles.max}>
+            <View style={{flex: 1}}>
                 <View style={styles.max}>
                     {/* <View style={styles.buttonHolder}>
                         <TouchableOpacity
@@ -281,29 +245,52 @@ export default class App extends Component {
         );
     }
 
+    _videoControls = () => {
+        return (
+            <View
+                style={{position: 'absolute', bottom: 4, flexDirection: 'row'}}>
+                <View style={styles.leftButton}>
+                    <FAIcon name="microphone" size={18} />
+                </View>
+                <View style={styles.rightButton}>
+                    <FAIcon name="video-camera" size={18} />
+                </View>
+            </View>
+        );
+    };
+
     _renderVideos = () => {
         const {joinSucceed} = this.state;
         return joinSucceed ? (
-            <View style={styles.fullView}>
-                <RtcLocalView.SurfaceView
-                    style={styles.localview}
-                    channelId={this.state.channelName}
-                    renderMode={VideoRenderMode.Hidden}
-                />
+            <View style={this.props.dynamicStyles}>
+                <View style={styles.localview}>
+                    <View style={{flex: 1}}>
+                        <RtcLocalView.SurfaceView
+                            style={styles.max}
+                            channelId={this.state.channelName}
+                            renderMode={VideoRenderMode.Hidden}
+                            // zOrderOnTop={true}
+                        />
+                    </View>
+                    <View style={styles.videoControlsOverlay}>
+                        {this._videoControls()}
+                    </View>
+                </View>
+
                 {this._renderRemoteVideos()}
             </View>
         ) : null;
     };
 
     _renderRemoteVideos = () => {
-        const {proximityPeers} = this.state;
+        const {peerIds} = this.state;
         return (
             <ScrollView
                 style={styles.remoteContainer}
                 contentContainerStyle={{paddingHorizontal: 2.5}}
                 horizontal={true}>
-                {proximityPeers.map(value => {
-                    value = parseInt(value);
+                {peerIds.map(value => {
+                    // value = parseInt(value);
                     console.log(
                         'Remote Peer View-',
                         value,
@@ -311,14 +298,15 @@ export default class App extends Component {
                         this.state.netId,
                     );
                     return (
-                        <RtcRemoteView.SurfaceView
-                            key={value}
-                            style={styles.remote}
-                            uid={value}
-                            channelId={this.state.channelName}
-                            renderMode={VideoRenderMode.Hidden}
-                            zOrderMediaOverlay={true}
-                        />
+                        <View style={styles.remote} key={value}>
+                            <RtcRemoteView.SurfaceView
+                                style={styles.max}
+                                uid={value}
+                                channelId={this.state.channelName}
+                                renderMode={VideoRenderMode.Hidden}
+                                // zOrderOnTop={true}
+                            />
+                        </View>
                     );
                 })}
             </ScrollView>

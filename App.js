@@ -45,7 +45,7 @@ class App extends React.Component {
         return (
             <NavigationContainer initialRouteName="UnityView">
                 <Stack.Navigator>
-                    <Stack.Screen name="Home" component={Home} />
+                    {/* <Stack.Screen name="Home" component={Home} /> */}
                     <Stack.Screen
                         name="UnityView"
                         component={Game}
