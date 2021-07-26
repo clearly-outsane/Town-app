@@ -6,13 +6,14 @@ import {
     TouchableOpacity,
     View,
     PermissionsAndroid,
+    TouchableHighlight,
 } from 'react-native';
 import RtcEngine, {
     RtcLocalView,
     RtcRemoteView,
     VideoRenderMode,
 } from 'react-native-agora';
-import FAIcon from 'react-native-vector-icons/FontAwesome';
+import VideoControls from './VideoControls';
 
 import styles from './Style';
 
@@ -245,35 +246,21 @@ export default class App extends Component {
         );
     }
 
-    _videoControls = () => {
-        return (
-            <View
-                style={{position: 'absolute', bottom: 4, flexDirection: 'row'}}>
-                <View style={styles.leftButton}>
-                    <FAIcon name="microphone" size={18} />
-                </View>
-                <View style={styles.rightButton}>
-                    <FAIcon name="video-camera" size={18} />
-                </View>
-            </View>
-        );
-    };
-
     _renderVideos = () => {
         const {joinSucceed} = this.state;
         return joinSucceed ? (
-            <View style={this.props.dynamicStyles}>
+            <View style={{flex: 1}}>
                 <View style={styles.localview}>
                     <View style={{flex: 1}}>
                         <RtcLocalView.SurfaceView
-                            style={styles.max}
+                            style={{...styles.max, borderRadius: 8}}
                             channelId={this.state.channelName}
                             renderMode={VideoRenderMode.Hidden}
-                            // zOrderOnTop={true}
+                            zOrderMediaOverlay={true}
                         />
                     </View>
                     <View style={styles.videoControlsOverlay}>
-                        {this._videoControls()}
+                        <VideoControls user={-1} _engine={this._engine} />
                     </View>
                 </View>
 
@@ -283,14 +270,14 @@ export default class App extends Component {
     };
 
     _renderRemoteVideos = () => {
-        const {peerIds} = this.state;
+        const {proximityPeers} = this.state;
         return (
             <ScrollView
                 style={styles.remoteContainer}
                 contentContainerStyle={{paddingHorizontal: 2.5}}
                 horizontal={true}>
-                {peerIds.map(value => {
-                    // value = parseInt(value);
+                {proximityPeers.map(value => {
+                    value = parseInt(value);
                     console.log(
                         'Remote Peer View-',
                         value,
@@ -299,13 +286,20 @@ export default class App extends Component {
                     );
                     return (
                         <View style={styles.remote} key={value}>
-                            <RtcRemoteView.SurfaceView
-                                style={styles.max}
-                                uid={value}
-                                channelId={this.state.channelName}
-                                renderMode={VideoRenderMode.Hidden}
-                                // zOrderOnTop={true}
-                            />
+                            <View style={{flex: 1}}>
+                                <RtcRemoteView.SurfaceView
+                                    style={styles.max}
+                                    uid={value}
+                                    channelId={this.state.channelName}
+                                    renderMode={VideoRenderMode.Hidden}
+                                />
+                            </View>
+                            <View style={styles.videoControlsOverlay}>
+                                <VideoControls
+                                    user={value}
+                                    _engine={this._engine}
+                                />
+                            </View>
                         </View>
                     );
                 })}

@@ -33,12 +33,8 @@ class App extends React.Component {
         Dimensions.removeEventListener('change', this.onDimensionsChange);
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        console.log(prevState);
-    }
-
     onDimensionsChange = ({window, screen}) => {
-        console.log('Dimensions changed ! ', window, screen);
+        // console.log('Dimensions changed ! ', window, screen);
     };
 
     _orientationDidChange = orientation => {
@@ -69,7 +65,7 @@ class App extends React.Component {
     render() {
         return (
             <View style={{flex: 1}}>
-                {/* <UnityView
+                <UnityView
                     style={{
                         position: 'absolute',
                         left: 0,
@@ -77,10 +73,9 @@ class App extends React.Component {
                         top: 0,
                         bottom: 0,
                         zIndex: -1,
-                        height: '100%',
                     }}
                     onMessage={this.onMessage.bind(this)}
-                /> */}
+                />
 
                 <VideoView
                     message={this.state.message}
