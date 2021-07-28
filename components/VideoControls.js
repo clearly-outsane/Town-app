@@ -32,7 +32,7 @@ export default class VideoControls extends React.Component {
                 this.props._engine.muteLocalVideoStream(!this.state.video);
             });
         else {
-            this.setState({mic: !this.state.mic}, () => {
+            this.setState({video: !this.state.video}, () => {
                 this.props._engine.muteRemoteVideoStream(
                     user,
                     !this.state.video,

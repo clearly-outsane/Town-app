@@ -7,6 +7,7 @@ import {
     View,
     PermissionsAndroid,
     TouchableHighlight,
+    TouchableHighlightBase,
 } from 'react-native';
 import RtcEngine, {
     RtcLocalView,
@@ -67,7 +68,7 @@ export default class App extends Component {
             console.log(this.props.dynamicStyles);
         }
         if (prevProps.message !== this.props.message) {
-            msg = this.props.message;
+            const msg = this.props.message;
             console.log(
                 'OnUnityMessage: ',
                 msg,
@@ -164,8 +165,8 @@ export default class App extends Component {
 
         this._engine.addListener('UserJoined', (uid, elapsed) => {
             console.log('UserJoined', uid, elapsed);
-            // this._engine.muteRemoteVideoStream(uid, true);
-            // this._engine.muteRemoteAudioStream(uid, true);
+            this._engine.muteRemoteVideoStream(uid, true);
+            this._engine.muteRemoteAudioStream(uid, true);
             // Get current peer IDs
             const {peerIds} = this.state;
             // If new user
@@ -197,7 +198,7 @@ export default class App extends Component {
                 });
             },
         );
-        this.startCall();
+        // this.startCall();
     };
 
     /**
@@ -210,8 +211,8 @@ export default class App extends Component {
             this.state.token,
             this.state.channelName,
             null,
-            // this.state.netId,
-            0,
+            this.state.netId,
+            // 0,
         );
     };
 
@@ -252,11 +253,10 @@ export default class App extends Component {
             <View style={{flex: 1}}>
                 <View style={styles.localview}>
                     <View style={{flex: 1}}>
-                        <RtcLocalView.SurfaceView
-                            style={{...styles.max, borderRadius: 8}}
+                        <RtcLocalView.TextureView
+                            style={{...styles.max, zIndex: 1}}
                             channelId={this.state.channelName}
                             renderMode={VideoRenderMode.Hidden}
-                            zOrderMediaOverlay={true}
                         />
                     </View>
                     <View style={styles.videoControlsOverlay}>
@@ -270,13 +270,13 @@ export default class App extends Component {
     };
 
     _renderRemoteVideos = () => {
-        const {proximityPeers} = this.state;
+        const {peerIds} = this.state;
         return (
             <ScrollView
                 style={styles.remoteContainer}
                 contentContainerStyle={{paddingHorizontal: 2.5}}
                 horizontal={true}>
-                {proximityPeers.map(value => {
+                {peerIds.map(value => {
                     value = parseInt(value);
                     console.log(
                         'Remote Peer View-',
@@ -287,7 +287,7 @@ export default class App extends Component {
                     return (
                         <View style={styles.remote} key={value}>
                             <View style={{flex: 1}}>
-                                <RtcRemoteView.SurfaceView
+                                <RtcRemoteView.TextureView
                                     style={styles.max}
                                     uid={value}
                                     channelId={this.state.channelName}
