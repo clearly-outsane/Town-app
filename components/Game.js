@@ -8,11 +8,19 @@
 
 import React from 'react';
 import {View, Dimensions, StatusBar} from 'react-native';
-import UnityView from '@asmadsen/react-native-unity-view';
+import UnityView, {UnityModule} from '@asmadsen/react-native-unity-view';
 import VideoView from './VideoView';
 import Orientation from 'react-native-orientation';
+import {userProfile, channelId, community_roles} from './Data';
+
+const GAME_OBJECT_NAME = 'GameState';
 
 class App extends React.Component {
+    constructor(props) {
+        super(props);
+        this.unityRef = React.createRef();
+    }
+
     state = {
         orientation: '',
         message: '',
@@ -20,10 +28,36 @@ class App extends React.Component {
         height: null,
     };
 
+    componentDidUpdate() {}
+
+    async postMessageToUnity() {
+        const isUnityReady = await UnityModule.isReady();
+        if (isUnityReady) {
+            UnityModule.postMessage(
+                GAME_OBJECT_NAME,
+                'passUserProfile',
+                JSON.stringify(userProfile),
+            );
+            UnityModule.postMessage(
+                GAME_OBJECT_NAME,
+                'passChannelId',
+                channelId,
+            );
+            UnityModule.postMessage(
+                GAME_OBJECT_NAME,
+                'passRoleDataFromCommunity',
+                JSON.stringify(community_roles),
+            );
+        }
+    }
+
     componentDidMount() {
         Orientation.lockToLandscape();
         Orientation.addOrientationListener(this._orientationDidChange);
         Dimensions.addEventListener('change', this.onDimensionsChange);
+        setTimeout(() => {
+            this.postMessageToUnity();
+        }, 5000);
     }
 
     componentWillUnmount() {
@@ -67,24 +101,27 @@ class App extends React.Component {
             <View style={{flex: 1}}>
                 <UnityView
                     style={{
-                        position: 'absolute',
-                        left: 0,
-                        right: 0,
-                        top: 0,
-                        bottom: 0,
-                        zIndex: -1,
+                        flex: 1,
                     }}
                     onMessage={this.onMessage.bind(this)}
+                    ref={this.unityRef}
                 />
-
-                <VideoView
-                    message={this.state.message}
-                    dynamicStyles={{
-                        width: this.state.width,
-                        height: this.state.height,
-                        backgroundColor: '#0093E9',
-                    }}
-                />
+                <View
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                    }}>
+                    <VideoView
+                        message={this.state.message}
+                        dynamicStyles={{
+                            width: this.state.width,
+                            height: this.state.height,
+                        }}
+                    />
+                </View>
             </View>
         );
     }

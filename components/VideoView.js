@@ -89,23 +89,23 @@ export default class App extends Component {
 
             if (parsedJson.action === 'EnterProximityMeeting') {
                 const index = this.state.proximityPeers.indexOf(
-                    parsedJson.name,
+                    parsedJson.remoteNetId,
                 );
                 if (index === -1) {
-                    uid = parseInt(parsedJson.name);
+                    uid = parseInt(parsedJson.remoteNetId);
                     this._engine.muteRemoteVideoStream(uid, false);
                     this._engine.muteRemoteAudioStream(uid, false);
                     this.setState({
                         ...this.state,
                         proximityPeers: [
                             ...this.state.proximityPeers,
-                            parsedJson.name,
+                            parsedJson.remoteNetId,
                         ],
                     });
                 }
                 console.log(
                     'Adding : ',
-                    parsedJson.name,
+                    parsedJson.remoteNetId,
                     'to',
                     this.state.netId,
                 );
@@ -113,7 +113,7 @@ export default class App extends Component {
 
             if (parsedJson.action === 'LeaveProximityMeeting') {
                 const index = this.state.proximityPeers.indexOf(
-                    parsedJson.name,
+                    parsedJson.remoteNetId,
                 );
 
                 var tempPeers = this.state.proximityPeers;
@@ -121,7 +121,7 @@ export default class App extends Component {
                 if (index > -1) {
                     tempPeers.splice(index, 1);
                     //mute them if they leave
-                    uid = parseInt(parsedJson.name);
+                    uid = parseInt(parsedJson.remoteNetId);
                     this._engine.muteRemoteVideoStream(uid, true);
                     this._engine.muteRemoteAudioStream(uid, true);
                     this.setState({
@@ -131,7 +131,7 @@ export default class App extends Component {
                 }
                 console.log(
                     'Removing : ',
-                    parsedJson.name,
+                    parsedJson.remoteNetId,
                     'from',
                     this.state.netId,
                 );
@@ -227,8 +227,8 @@ export default class App extends Component {
 
     render() {
         return (
-            <View style={{flex: 1}}>
-                <View style={styles.max}>
+            <View style={styles.max}>
+                <View style={{flex: 1}}>
                     {/* <View style={styles.buttonHolder}>
                         <TouchableOpacity
                             onPress={this.unmuteEveryone}
@@ -252,11 +252,13 @@ export default class App extends Component {
         return joinSucceed ? (
             <View style={{flex: 1}}>
                 <View style={styles.localview}>
-                    <View style={{flex: 1}}>
-                        <RtcLocalView.TextureView
-                            style={{...styles.max, zIndex: 1}}
+                    <View style={{flex: 1, backgroundColor: 'red'}}>
+                        <RtcLocalView.SurfaceView
+                            style={{...styles.max}}
                             channelId={this.state.channelName}
                             renderMode={VideoRenderMode.Hidden}
+                            // zOrderMediaOverlay={true}
+                            // removeClippedSubviews
                         />
                     </View>
                     <View style={styles.videoControlsOverlay}>
@@ -270,13 +272,13 @@ export default class App extends Component {
     };
 
     _renderRemoteVideos = () => {
-        const {peerIds} = this.state;
+        const {proximityPeers} = this.state;
         return (
             <ScrollView
                 style={styles.remoteContainer}
                 contentContainerStyle={{paddingHorizontal: 2.5}}
                 horizontal={true}>
-                {peerIds.map(value => {
+                {proximityPeers.map(value => {
                     value = parseInt(value);
                     console.log(
                         'Remote Peer View-',
@@ -287,11 +289,12 @@ export default class App extends Component {
                     return (
                         <View style={styles.remote} key={value}>
                             <View style={{flex: 1}}>
-                                <RtcRemoteView.TextureView
+                                <RtcRemoteView.SurfaceView
                                     style={styles.max}
                                     uid={value}
                                     channelId={this.state.channelName}
                                     renderMode={VideoRenderMode.Hidden}
+                                    // zOrderMediaOverlay={true}
                                 />
                             </View>
                             <View style={styles.videoControlsOverlay}>
